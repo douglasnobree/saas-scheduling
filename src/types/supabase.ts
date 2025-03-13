@@ -9,6 +9,144 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      email_logs: {
+        Row: {
+          appointment_id: string | null
+          content: string
+          created_at: string
+          id: string
+          notification_type: string
+          recipient_email: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          notification_type: string
+          recipient_email: string
+          status: string
+          subject: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          notification_type?: string
+          recipient_email?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_notifications: {
+        Row: {
+          appointment_canceled: boolean
+          appointment_confirmed: boolean
+          appointment_created: boolean
+          appointment_reminder: boolean
+          appointment_updated: boolean
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          appointment_canceled?: boolean
+          appointment_confirmed?: boolean
+          appointment_created?: boolean
+          appointment_reminder?: boolean
+          appointment_updated?: boolean
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          appointment_canceled?: boolean
+          appointment_confirmed?: boolean
+          appointment_created?: boolean
+          appointment_reminder?: boolean
+          appointment_updated?: boolean
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          id: string
+          message: string
+          metadata: Json | null
+          read: boolean
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          read?: boolean
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          read?: boolean
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           amount: number | null

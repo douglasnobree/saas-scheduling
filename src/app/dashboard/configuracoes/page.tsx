@@ -13,6 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -170,21 +171,14 @@ export default async function SettingsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">Notificações por Email</p>
+                      <p className="font-medium">Gerenciar Notificações</p>
                       <p className="text-sm text-muted-foreground">
-                        Receba atualizações sobre seus agendamentos por email.
+                        Configure suas preferências de notificações e lembretes.
                       </p>
                     </div>
-                    <Button variant="outline">Ativado</Button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Lembretes de Agendamento</p>
-                      <p className="text-sm text-muted-foreground">
-                        Receba lembretes antes dos seus agendamentos.
-                      </p>
-                    </div>
-                    <Button variant="outline">Ativado</Button>
+                    <Button variant="outline" asChild>
+                      <Link href="/dashboard/notificacoes">Configurar</Link>
+                    </Button>
                   </div>
                 </div>
               </CardContent>

@@ -1,7 +1,7 @@
 "use client";
 
 import { UserWithRole } from "@/types/roles";
-import { UserCircle, Bell, Search } from "lucide-react";
+import { UserCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { createClient } from "../../../supabase/client";
 import { useRouter } from "next/navigation";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 interface HeaderProps {
   user: UserWithRole;
@@ -40,12 +41,7 @@ export function Header({ user }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
-              3
-            </span>
-          </Button>
+          <NotificationBell />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -81,6 +77,12 @@ export function Header({ user }: HeaderProps) {
                 onClick={() => router.push("/dashboard/configuracoes")}
               >
                 Configurações
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => router.push("/dashboard/notificacoes")}
+              >
+                Notificações
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer text-red-500 focus:text-red-500"

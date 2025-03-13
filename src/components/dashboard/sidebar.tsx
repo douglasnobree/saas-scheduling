@@ -11,6 +11,7 @@ import {
   Home,
   Clock,
   FileText,
+  Bell,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -58,6 +59,12 @@ export function Sidebar({ userRole }: SidebarProps) {
       icon: <BarChart className="h-5 w-5" />,
       href: "/dashboard/relatorios",
       roles: [UserRole.ADMIN, UserRole.BUSINESS_ADMIN],
+    },
+    {
+      label: "Notificações",
+      icon: <Bell className="h-5 w-5" />,
+      href: "/dashboard/notificacoes",
+      roles: [UserRole.ADMIN, UserRole.BUSINESS_ADMIN, UserRole.USER],
     },
     {
       label: "Configurações",

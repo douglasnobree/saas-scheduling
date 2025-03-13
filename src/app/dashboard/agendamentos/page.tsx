@@ -34,49 +34,38 @@ export default async function AppointmentsPage() {
     avatar_url: userData?.avatar_url || "",
   };
 
-  // Mock data for appointments
-  const mockAppointments = [
-    {
-      id: "1",
-      client: "Maria Silva",
-      service: "Consulta Médica",
-      date: "15/07/2023",
-      time: "14:30",
-      status: "confirmado" as const,
-    },
-    {
-      id: "2",
-      client: "João Santos",
-      service: "Corte de Cabelo",
-      date: "16/07/2023",
-      time: "10:00",
-      status: "agendado" as const,
-    },
-    {
-      id: "3",
-      client: "Ana Oliveira",
-      service: "Massagem Terapêutica",
-      date: "16/07/2023",
-      time: "16:45",
-      status: "agendado" as const,
-    },
-    {
-      id: "4",
-      client: "Carlos Mendes",
-      service: "Consulta Odontológica",
-      date: "17/07/2023",
-      time: "09:15",
-      status: "agendado" as const,
-    },
-    {
-      id: "5",
-      client: "Fernanda Lima",
-      service: "Sessão de Fisioterapia",
-      date: "17/07/2023",
-      time: "11:30",
-      status: "confirmado" as const,
-    },
-  ];
+  // Fetch real appointments from the database
+  const { data: appointments, error } = await supabase
+    .from("appointments")
+    .select(
+      `
+      id,
+      date,
+      time,
+      status,
+      services(id, name),
+      clients:client_id(id, name, email, avatar_url),
+      providers:provider_id(id, name, email, avatar_url)
+    `,
+    )
+    .order("date", { ascending: true })
+    .order("time", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching appointments:", error);
+  }
+
+  // Format the appointments data
+  const formattedAppointments = appointments
+    ? appointments.map((appointment) => ({
+        id: appointment.id,
+        client: appointment.clients?.name || "Unknown Client",
+        service: appointment.services?.name || "Unknown Service",
+        date: new Date(appointment.date).toLocaleDateString("pt-BR"),
+        time: appointment.time.substring(0, 5), // Format as HH:MM
+        status: appointment.status,
+      }))
+    : [];
 
   return (
     <DashboardLayout user={userWithRole}>
@@ -124,43 +113,54 @@ export default async function AppointmentsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {mockAppointments.map((appointment) => (
-                        <tr key={appointment.id} className="border-b">
-                          <td className="py-3 px-4">{appointment.client}</td>
-                          <td className="py-3 px-4">{appointment.service}</td>
-                          <td className="py-3 px-4">{appointment.date}</td>
-                          <td className="py-3 px-4">{appointment.time}</td>
-                          <td className="py-3 px-4">
-                            <span
-                              className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
-                                appointment.status === "confirmado"
-                                  ? "bg-green-100 text-green-800"
-                                  : appointment.status === "agendado"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : appointment.status === "concluído"
-                                      ? "bg-purple-100 text-purple-800"
-                                      : "bg-red-100 text-red-800"
-                              }`}
-                            >
-                              {appointment.status}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex gap-2">
-                              <Button variant="outline" size="sm">
-                                Editar
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-red-500"
+                      {formattedAppointments.length > 0 ? (
+                        formattedAppointments.map((appointment) => (
+                          <tr key={appointment.id} className="border-b">
+                            <td className="py-3 px-4">{appointment.client}</td>
+                            <td className="py-3 px-4">{appointment.service}</td>
+                            <td className="py-3 px-4">{appointment.date}</td>
+                            <td className="py-3 px-4">{appointment.time}</td>
+                            <td className="py-3 px-4">
+                              <span
+                                className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
+                                  appointment.status === "confirmado"
+                                    ? "bg-green-100 text-green-800"
+                                    : appointment.status === "agendado"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : appointment.status === "concluído"
+                                        ? "bg-purple-100 text-purple-800"
+                                        : "bg-red-100 text-red-800"
+                                }`}
                               >
-                                Cancelar
-                              </Button>
-                            </div>
+                                {appointment.status}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm">
+                                  Editar
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-500"
+                                >
+                                  Cancelar
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan={6}
+                            className="py-6 text-center text-muted-foreground"
+                          >
+                            Nenhum agendamento encontrado.
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>

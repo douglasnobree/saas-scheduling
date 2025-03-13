@@ -9,6 +9,145 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          date: string
+          id: string
+          notes: string | null
+          provider_id: string
+          service_id: string
+          status: string
+          time: string
+          updated_at: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          date: string
+          id?: string
+          notes?: string | null
+          provider_id: string
+          service_id: string
+          status: string
+          time: string
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          date?: string
+          id?: string
+          notes?: string | null
+          provider_id?: string
+          service_id?: string
+          status?: string
+          time?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_hours: {
+        Row: {
+          business_id: string | null
+          created_at: string | null
+          day_of_week: number
+          end_time: string | null
+          id: string
+          is_closed: boolean | null
+          provider_id: string | null
+          start_time: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          business_id?: string | null
+          created_at?: string | null
+          day_of_week: number
+          end_time?: string | null
+          id?: string
+          is_closed?: boolean | null
+          provider_id?: string | null
+          start_time?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          business_id?: string | null
+          created_at?: string | null
+          day_of_week?: number
+          end_time?: string | null
+          id?: string
+          is_closed?: boolean | null
+          provider_id?: string | null
+          start_time?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_hours_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          id: string
+          last_appointment: string | null
+          notes: string | null
+          phone: string | null
+          total_appointments: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          id: string
+          last_appointment?: string | null
+          notes?: string | null
+          phone?: string | null
+          total_appointments?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          id?: string
+          last_appointment?: string | null
+          notes?: string | null
+          phone?: string | null
+          total_appointments?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_logs: {
         Row: {
           appointment_id: string | null
@@ -146,6 +285,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      services: {
+        Row: {
+          business_id: string | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          duration: number
+          id: string
+          name: string
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          business_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration: number
+          id?: string
+          name: string
+          price: number
+          updated_at?: string | null
+        }
+        Update: {
+          business_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration?: number
+          id?: string
+          name?: string
+          price?: number
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {

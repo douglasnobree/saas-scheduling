@@ -38,49 +38,15 @@ export default async function ServicesPage() {
     return redirect("/dashboard");
   }
 
-  // Mock data for services
-  const mockServices = [
-    {
-      id: "1",
-      name: "Consulta Médica",
-      duration: 30,
-      price: 150.0,
-      description: "Consulta médica geral com avaliação completa.",
-      category: "Saúde",
-    },
-    {
-      id: "2",
-      name: "Corte de Cabelo",
-      duration: 45,
-      price: 80.0,
-      description: "Corte de cabelo com lavagem e finalização.",
-      category: "Beleza",
-    },
-    {
-      id: "3",
-      name: "Massagem Terapêutica",
-      duration: 60,
-      price: 120.0,
-      description: "Massagem relaxante para alívio de tensões musculares.",
-      category: "Bem-estar",
-    },
-    {
-      id: "4",
-      name: "Consulta Odontológica",
-      duration: 45,
-      price: 200.0,
-      description: "Avaliação odontológica completa com limpeza.",
-      category: "Saúde",
-    },
-    {
-      id: "5",
-      name: "Sessão de Fisioterapia",
-      duration: 50,
-      price: 130.0,
-      description: "Sessão de fisioterapia para reabilitação.",
-      category: "Saúde",
-    },
-  ];
+  // Fetch services from the database
+  const { data: services, error } = await supabase
+    .from("services")
+    .select("*")
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching services:", error);
+  }
 
   return (
     <DashboardLayout user={userWithRole}>
@@ -114,41 +80,52 @@ export default async function ServicesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {mockServices.map((service) => (
-                    <tr key={service.id} className="border-b">
-                      <td className="py-3 px-4">{service.name}</td>
-                      <td className="py-3 px-4">
-                        <span className="inline-block rounded-full px-2 py-1 text-xs font-medium bg-secondary">
-                          {service.category}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 flex items-center">
-                        <Clock className="mr-1 h-4 w-4 text-muted-foreground" />
-                        {service.duration} min
-                      </td>
-                      <td className="py-3 px-4 flex items-center">
-                        <DollarSign className="mr-1 h-4 w-4 text-muted-foreground" />
-                        R$ {service.price.toFixed(2)}
-                      </td>
-                      <td className="py-3 px-4 max-w-xs truncate">
-                        {service.description}
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            Editar
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-red-500"
-                          >
-                            Excluir
-                          </Button>
-                        </div>
+                  {services && services.length > 0 ? (
+                    services.map((service) => (
+                      <tr key={service.id} className="border-b">
+                        <td className="py-3 px-4">{service.name}</td>
+                        <td className="py-3 px-4">
+                          <span className="inline-block rounded-full px-2 py-1 text-xs font-medium bg-secondary">
+                            {service.category || "Sem categoria"}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 flex items-center">
+                          <Clock className="mr-1 h-4 w-4 text-muted-foreground" />
+                          {service.duration} min
+                        </td>
+                        <td className="py-3 px-4 flex items-center">
+                          <DollarSign className="mr-1 h-4 w-4 text-muted-foreground" />
+                          R$ {parseFloat(service.price).toFixed(2)}
+                        </td>
+                        <td className="py-3 px-4 max-w-xs truncate">
+                          {service.description}
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              Editar
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-500"
+                            >
+                              Excluir
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="py-6 text-center text-muted-foreground"
+                      >
+                        Nenhum serviço encontrado.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

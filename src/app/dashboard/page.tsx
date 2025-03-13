@@ -1,8 +1,11 @@
-import DashboardNavbar from "@/components/dashboard-navbar";
 import { createClient } from "../../../supabase/server";
-import { InfoIcon, UserCircle } from "lucide-react";
 import { redirect } from "next/navigation";
-import { SubscriptionCheck } from "@/components/subscription-check";
+import { DashboardLayout } from "@/components/dashboard/layout";
+import { StatsCard } from "@/components/dashboard/stats-card";
+import { UpcomingAppointments } from "@/components/dashboard/upcoming-appointments";
+import { RecentClients } from "@/components/dashboard/recent-clients";
+import { Calendar, Users, Clock, DollarSign } from "lucide-react";
+import { UserRole, UserWithRole } from "@/types/roles";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -15,37 +18,111 @@ export default async function Dashboard() {
     return redirect("/sign-in");
   }
 
-  return (
-    <SubscriptionCheck>
-      <DashboardNavbar />
-      <main className="w-full">
-        <div className="container mx-auto px-4 py-8 flex flex-col gap-8">
-          {/* Header Section */}
-          <header className="flex flex-col gap-4">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-            <div className="bg-secondary/50 text-sm p-3 px-4 rounded-lg text-muted-foreground flex gap-2 items-center">
-              <InfoIcon size="14" />
-              <span>This is a protected page only visible to authenticated users</span>
-            </div>
-          </header>
+  // Fetch user data including role
+  const { data: userData } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
-          {/* User Profile Section */}
-          <section className="bg-card rounded-xl p-6 border shadow-sm">
-            <div className="flex items-center gap-4 mb-6">
-              <UserCircle size={48} className="text-primary" />
-              <div>
-                <h2 className="font-semibold text-xl">User Profile</h2>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
-              </div>
-            </div>
-            <div className="bg-muted/50 rounded-lg p-4 overflow-hidden">
-              <pre className="text-xs font-mono max-h-48 overflow-auto">
-                {JSON.stringify(user, null, 2)}
-              </pre>
-            </div>
-          </section>
+  const userWithRole: UserWithRole = {
+    id: user.id,
+    email: user.email || "",
+    role: (userData?.role as UserRole) || UserRole.USER,
+    name: userData?.name || "",
+    full_name: userData?.full_name || "",
+    avatar_url: userData?.avatar_url || "",
+  };
+
+  // Mock data for the dashboard
+  const mockAppointments = [
+    {
+      id: "1",
+      client: "Maria Silva",
+      service: "Consulta Médica",
+      date: "15/07/2023",
+      time: "14:30",
+      status: "confirmado" as const,
+    },
+    {
+      id: "2",
+      client: "João Santos",
+      service: "Corte de Cabelo",
+      date: "16/07/2023",
+      time: "10:00",
+      status: "agendado" as const,
+    },
+    {
+      id: "3",
+      client: "Ana Oliveira",
+      service: "Massagem Terapêutica",
+      date: "16/07/2023",
+      time: "16:45",
+      status: "agendado" as const,
+    },
+  ];
+
+  const mockClients = [
+    {
+      id: "1",
+      name: "Maria Silva",
+      email: "maria.silva@exemplo.com",
+      lastAppointment: "15/07/2023",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
+    },
+    {
+      id: "2",
+      name: "João Santos",
+      email: "joao.santos@exemplo.com",
+      lastAppointment: "10/07/2023",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Joao",
+    },
+    {
+      id: "3",
+      name: "Ana Oliveira",
+      email: "ana.oliveira@exemplo.com",
+      lastAppointment: "05/07/2023",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana",
+    },
+  ];
+
+  return (
+    <DashboardLayout user={userWithRole}>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Painel de Controle</h1>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <StatsCard
+            title="Total de Agendamentos"
+            value="128"
+            icon={Calendar}
+            trend={{ value: 12, isPositive: true }}
+          />
+          <StatsCard
+            title="Clientes Ativos"
+            value="64"
+            icon={Users}
+            trend={{ value: 8, isPositive: true }}
+          />
+          <StatsCard
+            title="Horas Reservadas"
+            value="256"
+            icon={Clock}
+            trend={{ value: 5, isPositive: true }}
+          />
+          <StatsCard
+            title="Receita Mensal"
+            value="R$ 12.400"
+            icon={DollarSign}
+            trend={{ value: 10, isPositive: true }}
+          />
         </div>
-      </main>
-    </SubscriptionCheck>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <UpcomingAppointments appointments={mockAppointments} />
+          <RecentClients clients={mockClients} />
+        </div>
+      </div>
+    </DashboardLayout>
   );
 }
